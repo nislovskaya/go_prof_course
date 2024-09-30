@@ -1,4 +1,4 @@
-module github.com/go_prof_course/hw02_unpack_string
+module github.com/nislovskaya/go_prof_course/hw02_unpack_string
 
 go 1.22
 
