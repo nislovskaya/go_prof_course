@@ -1,5 +1,5 @@
-module github.com/go_prof_course/hw01_hello_otus
+module github.com/nislovskaya/go_prof_course/hw01_hello_otus
 
 go 1.22
 
-require golang.org/x/example/hello v0.0.0-20240916213319-f3623ff43ac2
+require golang.org/x/example/hello v0.0.0-20240925201653-1a5e218e5455
