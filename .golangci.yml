@@ -22,7 +22,7 @@ linters:
   disable-all: true
   enable:
     - asciicheck
-    - depguard
+    - copyloopvar
     - dogsled
     - dupl
     - bodyclose
