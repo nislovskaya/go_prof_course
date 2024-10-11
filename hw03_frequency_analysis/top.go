@@ -1,15 +1,12 @@
 package hw03frequencyanalysis
 
 import (
-	"regexp"
 	"sort"
+	"strings"
 )
 
-var regex = regexp.MustCompile(`\S+`)
-
 func Top10(text string) []string {
-	words := regex.FindAllString(text, -1)
-
+	words := strings.Fields(text)
 	wordsCount := make(map[string]int)
 	for _, word := range words {
 		wordsCount[word]++
