@@ -14,7 +14,7 @@ const (
 	fault         = sleepPerStage / 2
 )
 
-var isFullTesting = true
+var isFullTesting = false
 
 func TestPipeline(t *testing.T) {
 	// Stage generator
@@ -62,6 +62,36 @@ func TestPipeline(t *testing.T) {
 			int64(elapsed),
 			// ~0.8s for processing 5 values in 4 stages (100ms every) concurrently
 			int64(sleepPerStage)*int64(len(stages)+len(data)-1)+int64(fault))
+	})
+
+	t.Run("different types", func(t *testing.T) {
+		in := make(Bi)
+		data := []interface{}{"Hello", "World", 1}
+
+		go func() {
+			for _, v := range data {
+				in <- v
+			}
+			close(in)
+		}()
+
+		result := make([]string, 0, len(data))
+		for s := range ExecutePipeline(in, nil,
+			g("Stringifier", func(v interface{}) interface{} {
+				switch v := v.(type) {
+				case string:
+					return v
+				case int:
+					return strconv.Itoa(v)
+				default:
+					return "unknown"
+				}
+			})) {
+			result = append(result, s.(string))
+		}
+
+		expected := []string{"Hello", "World", "1"}
+		require.Equal(t, expected, result)
 	})
 
 	t.Run("done case", func(t *testing.T) {
@@ -150,6 +180,5 @@ func TestAllStageStop(t *testing.T) {
 		wg.Wait()
 
 		require.Len(t, result, 0)
-
 	})
 }

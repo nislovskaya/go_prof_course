@@ -6,9 +6,34 @@ type (
 	Bi  = chan interface{}
 )
 
-type Stage func(in In) (out Out)
+type Stage func(in In) Out
 
 func ExecutePipeline(in In, done In, stages ...Stage) Out {
-	// Place your code here.
-	return nil
+	out := in
+	for _, stage := range stages {
+		out = mergeChan(done, stage(out))
+	}
+	return out
+}
+
+func mergeChan(done, in In) Out {
+	out := make(Bi)
+
+	go func() {
+		defer close(out)
+
+		for {
+			select {
+			case val, ok := <-in:
+				if !ok {
+					return
+				}
+				out <- val
+			case <-done:
+				return
+			}
+		}
+	}()
+
+	return out
 }
