@@ -6,9 +6,6 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-// Change to true if needed.
-var taskWithAsteriskIsCompleted = false
-
 var text = `Как видите, он  спускается  по  лестнице  вслед  за  своим
 	другом   Кристофером   Робином,   головой   вниз,  пересчитывая
 	ступеньки собственным затылком:  бум-бум-бум.  Другого  способа
@@ -49,34 +46,37 @@ func TestTop10(t *testing.T) {
 	})
 
 	t.Run("positive test", func(t *testing.T) {
-		if taskWithAsteriskIsCompleted {
-			expected := []string{
-				"а",         // 8
-				"он",        // 8
-				"и",         // 6
-				"ты",        // 5
-				"что",       // 5
-				"в",         // 4
-				"его",       // 4
-				"если",      // 4
-				"кристофер", // 4
-				"не",        // 4
-			}
-			require.Equal(t, expected, Top10(text))
-		} else {
-			expected := []string{
-				"он",        // 8
-				"а",         // 6
-				"и",         // 6
-				"ты",        // 5
-				"что",       // 5
-				"-",         // 4
-				"Кристофер", // 4
-				"если",      // 4
-				"не",        // 4
-				"то",        // 4
-			}
-			require.Equal(t, expected, Top10(text))
+		expected := []string{
+			"он",        // 8
+			"а",         // 6
+			"и",         // 6
+			"ты",        // 5
+			"что",       // 5
+			"-",         // 4
+			"Кристофер", // 4
+			"если",      // 4
+			"не",        // 4
+			"то",        // 4
 		}
+		require.Equal(t, expected, Top10(text))
 	})
+
+	t.Run("positive test 2", func(t *testing.T) {
+		expected := []string{
+			`and`,     // 2
+			`one`,     // 2
+			`cat`,     // 1
+			`cats`,    // 1
+			`dog,`,    // 1
+			`dog,two`, // 1
+			`man`,     // 1
+		}
+		require.Equal(t, expected, Top10("cat and dog, one dog,two cats and one man"))
+	})
+}
+
+func BenchmarkTop10(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		Top10(text)
+	}
 }
