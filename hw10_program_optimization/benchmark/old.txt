@@ -1,0 +1,7 @@
+goos: darwin
+goarch: amd64
+pkg: github.com/nislovskaya/go_prof_course/hw10_program_optimization
+cpu: Intel(R) Core(TM) i5-1038NG7 CPU @ 2.00GHz
+BenchmarkGetDomainStat-8   	       8	 132675776 ns/op	136045208 B/op	 1700090 allocs/op
+PASS
+ok  	github.com/nislovskaya/go_prof_course/hw10_program_optimization	3.031s
