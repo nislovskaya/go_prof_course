@@ -1,0 +1,20 @@
+logger:
+  level: "info"
+  output: "stdout"
+
+storage:
+  type: "database"
+
+database:
+  driver: "postgres"
+  host: "localhost"
+  port: 5433
+  user: "admin"
+  password: "pass"
+  dbname: "calendar_db"
+  sslmode: "disable"
+
+server:
+  host: "localhost"
+  port: 8080
+  timeout: 30s

@@ -3,22 +3,21 @@ package main
 import (
 	"context"
 	"flag"
+	"fmt"
+	_ "github.com/lib/pq"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
 
-	"github.com/fixme_my_friend/hw12_13_14_15_calendar/internal/app"
-	"github.com/fixme_my_friend/hw12_13_14_15_calendar/internal/logger"
-	internalhttp "github.com/fixme_my_friend/hw12_13_14_15_calendar/internal/server/http"
-	memorystorage "github.com/fixme_my_friend/hw12_13_14_15_calendar/internal/storage/memory"
+	"github.com/nislovskaya/go_prof_course/hw12_13_14_15_calendar/cmd"
+	"github.com/nislovskaya/go_prof_course/hw12_13_14_15_calendar/internal/app"
+	"github.com/nislovskaya/go_prof_course/hw12_13_14_15_calendar/internal/logger"
+	server "github.com/nislovskaya/go_prof_course/hw12_13_14_15_calendar/internal/server/http"
+	"github.com/nislovskaya/go_prof_course/hw12_13_14_15_calendar/internal/storage"
 )
 
-var configFile string
-
-func init() {
-	flag.StringVar(&configFile, "config", "/etc/calendar/config.toml", "Path to configuration file")
-}
+const appName = "calendar"
 
 func main() {
 	flag.Parse()
@@ -28,33 +27,44 @@ func main() {
 		return
 	}
 
-	config := NewConfig()
-	logg := logger.New(config.Logger.Level)
-
-	storage := memorystorage.New()
-	calendar := app.New(logg, storage)
-
-	server := internalhttp.NewServer(logg, calendar)
-
-	ctx, cancel := signal.NotifyContext(context.Background(),
-		syscall.SIGINT, syscall.SIGTERM, syscall.SIGHUP)
+	ctx, cancel := signal.NotifyContext(
+		context.Background(),
+		syscall.SIGINT, syscall.SIGTERM, syscall.SIGHUP,
+	)
 	defer cancel()
+
+	config := cmd.GetConfig(cmd.ConfigFile)
+
+	logg := logger.New(appName, config.Logger.Level, os.Stdout)
+
+	eventStorage, err := storage.GetStorage(config)
+	if err != nil {
+		logg.Error(fmt.Sprintf("failed to get storage instance: %s", err))
+	}
+	err = eventStorage.Connect(ctx)
+	if err != nil {
+		logg.Error(fmt.Sprintf("failed to connect to storage: %s", err))
+	}
+
+	calendar := app.New(logg, eventStorage)
+
+	srv := server.NewServer(logg, calendar)
 
 	go func() {
 		<-ctx.Done()
 
-		ctx, cancel := context.WithTimeout(context.Background(), time.Second*3)
+		ctx, cancel = context.WithTimeout(context.Background(), time.Second*3)
 		defer cancel()
 
-		if err := server.Stop(ctx); err != nil {
-			logg.Error("failed to stop http server: " + err.Error())
+		if err = srv.Stop(ctx); err != nil {
+			logg.Error("failed to stop http srv: " + err.Error())
 		}
 	}()
 
 	logg.Info("calendar is running...")
 
-	if err := server.Start(ctx); err != nil {
-		logg.Error("failed to start http server: " + err.Error())
+	if err = srv.Start(ctx); err != nil {
+		logg.Error("failed to start http srv: " + err.Error())
 		cancel()
 		os.Exit(1) //nolint:gocritic
 	}

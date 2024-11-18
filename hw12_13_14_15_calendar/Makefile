@@ -1,8 +1,21 @@
 BIN := "./bin/calendar"
+BIN_MIGRATE := "./bin/migrate"
 DOCKER_IMG="calendar:develop"
 
 GIT_HASH := $(shell git log --format="%h" -n 1)
 LDFLAGS := -X main.release="develop" -X main.buildDate=$(shell date -u +%Y-%m-%dT%H:%M:%S) -X main.gitHash=$(GIT_HASH)
+
+build-migrations:
+	go build -v -o $(BIN_MIGRATE) ./cmd/migrations
+
+migrate-status: build-migrations
+	$(BIN_MIGRATE) -config="./configs/config.yml" status
+
+migrate-up: build-migrations
+	$(BIN_MIGRATE) -config="./configs/config.yml" up
+
+migrate-down: build-migrations
+	$(BIN_MIGRATE) -config="./configs/config.yml" down
 
 build:
 	go build -v -o $(BIN) -ldflags "$(LDFLAGS)" ./cmd/calendar
