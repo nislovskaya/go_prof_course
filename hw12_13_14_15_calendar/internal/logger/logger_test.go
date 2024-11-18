@@ -2,9 +2,10 @@ package logger_test
 
 import (
 	"bytes"
+	"testing"
+
 	"github.com/nislovskaya/go_prof_course/hw12_13_14_15_calendar/internal/logger"
 	"github.com/stretchr/testify/require"
-	"testing"
 )
 
 func TestLogger(t *testing.T) {

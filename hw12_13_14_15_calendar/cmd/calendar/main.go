@@ -4,12 +4,12 @@ import (
 	"context"
 	"flag"
 	"fmt"
-	_ "github.com/lib/pq"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
 
+	_ "github.com/lib/pq"
 	"github.com/nislovskaya/go_prof_course/hw12_13_14_15_calendar/cmd"
 	"github.com/nislovskaya/go_prof_course/hw12_13_14_15_calendar/internal/app"
 	"github.com/nislovskaya/go_prof_course/hw12_13_14_15_calendar/internal/logger"

@@ -2,16 +2,16 @@ package memorystorage_test
 
 import (
 	"context"
-	"github.com/google/uuid"
-	"github.com/stretchr/testify/require"
 	"testing"
 	"time"
 
-	"github.com/nislovskaya/go_prof_course/hw12_13_14_15_calendar/internal/storage"
+	"github.com/google/uuid"
+	"github.com/nislovskaya/go_prof_course/hw12_13_14_15_calendar/internal/storage/domain"
 	memorystorage "github.com/nislovskaya/go_prof_course/hw12_13_14_15_calendar/internal/storage/memory"
+	"github.com/stretchr/testify/require"
 )
 
-var event = storage.Event{
+var event = domain.Event{
 	Title:       "some event",
 	DateTime:    time.Now(),
 	Description: "this is some event",
@@ -44,7 +44,7 @@ func TestStorageModify(t *testing.T) {
 		id, err := memStorage.Create(event)
 		require.NoError(t, err)
 
-		eventToUpdate := storage.Event{
+		eventToUpdate := domain.Event{
 			ID:          id,
 			Title:       newTitle,
 			DateTime:    event.DateTime,
@@ -70,7 +70,7 @@ func TestStorageModify(t *testing.T) {
 		randomID := uuid.New().String()
 		err = memStorage.Update(randomID, event)
 
-		require.ErrorIs(t, err, storage.ErrEventNotFound)
+		require.ErrorIs(t, err, memorystorage.ErrEventNotFound)
 	})
 
 	t.Run("delete", func(t *testing.T) {
@@ -109,7 +109,7 @@ func TestStorageRead(t *testing.T) {
 
 	t.Run("read all for week", func(t *testing.T) {
 		initialDate := time.Date(2023, 10, 16, 13, 10, 0, 0, time.UTC)
-		memStorage := memorystorage.NewWithEvents(map[string]storage.Event{
+		memStorage := memorystorage.NewWithEvents(map[string]domain.Event{
 			"1": {ID: "1", Title: "1", DateTime: initialDate.Add(-time.Hour * 24 * 2), UserID: "1"},
 			"2": {ID: "2", Title: "2", DateTime: initialDate.Add(-time.Hour * 24 * 1), UserID: "1"},
 			"3": {ID: "3", Title: "3", DateTime: initialDate.Add(0), UserID: "1"},
@@ -125,7 +125,7 @@ func TestStorageRead(t *testing.T) {
 
 	t.Run("read all for month", func(t *testing.T) {
 		initialDate := time.Date(2023, 10, 16, 13, 10, 0, 0, time.UTC)
-		memStorage := memorystorage.NewWithEvents(map[string]storage.Event{
+		memStorage := memorystorage.NewWithEvents(map[string]domain.Event{
 			"1": {ID: "1", Title: "1", DateTime: initialDate.Add(0), UserID: "1"},
 			"2": {ID: "2", Title: "2", DateTime: initialDate.Add(time.Hour * 24 * 30), UserID: "1"},
 			"3": {ID: "3", Title: "3", DateTime: initialDate.Add(time.Hour * 24 * 10), UserID: "1"},

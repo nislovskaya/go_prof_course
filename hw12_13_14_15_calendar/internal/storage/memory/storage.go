@@ -3,10 +3,10 @@ package memorystorage
 import (
 	"context"
 	"errors"
-	"github.com/google/uuid"
 	"sync"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/nislovskaya/go_prof_course/hw12_13_14_15_calendar/internal/storage/domain"
 )
 

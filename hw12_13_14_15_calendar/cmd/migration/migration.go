@@ -3,12 +3,12 @@ package main
 import (
 	"errors"
 	"flag"
+	"log"
+
 	"github.com/golang-migrate/migrate/v4"
 	_ "github.com/golang-migrate/migrate/v4/database/postgres"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
 	_ "github.com/lib/pq"
-	"log"
-
 	"github.com/nislovskaya/go_prof_course/hw12_13_14_15_calendar/cmd"
 )
 

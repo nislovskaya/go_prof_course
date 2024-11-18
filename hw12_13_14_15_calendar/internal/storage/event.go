@@ -13,7 +13,7 @@ import (
 
 const (
 	Memory   string = "memory"
-	Database        = "database"
+	Database string = "database"
 )
 
 type EventStore interface {

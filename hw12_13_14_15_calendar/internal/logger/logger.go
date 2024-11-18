@@ -6,7 +6,6 @@ import (
 )
 
 type Logger struct {
-	prefix string
 	logger *log.Logger
 	level  int
 }

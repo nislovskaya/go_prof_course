@@ -4,9 +4,9 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/jmoiron/sqlx"
 	"time"
 
+	"github.com/jmoiron/sqlx"
 	"github.com/nislovskaya/go_prof_course/hw12_13_14_15_calendar/internal/configs"
 	"github.com/nislovskaya/go_prof_course/hw12_13_14_15_calendar/internal/storage/domain"
 )
@@ -62,7 +62,10 @@ func (s *Storage) Create(event domain.Event) (string, error) {
 	var id string
 	err := s.db.QueryRowContext(
 		s.ctx,
-		fmt.Sprintf("INSERT INTO %s(%s) VALUES($1,$2,$3,$4,$5,$6) RETURNING id", tableName, tableColumnsInsert),
+		fmt.Sprintf(
+			"INSERT INTO %s(%s) VALUES($1,$2,$3,$4,$5,$6) RETURNING id",
+			tableName, tableColumnsInsert,
+		),
 		event.Title,
 		event.Description,
 		event.DateTime.Format(time.RFC3339),
@@ -80,7 +83,10 @@ func (s *Storage) Create(event domain.Event) (string, error) {
 func (s *Storage) Update(id string, event domain.Event) error {
 	result, err := s.db.ExecContext(
 		s.ctx,
-		fmt.Sprintf("UPDATE %s SET title=$1, description=$2, datetime=$3, duration=$4, user_id=$5, notify_in=$6 WHERE id=$7", tableName),
+		fmt.Sprintf(
+			"UPDATE %s SET title=$1, description=$2, datetime=$3, duration=$4, user_id=$5, notify_in=$6 WHERE id=$7",
+			tableName,
+		),
 		event.Title,
 		event.Description,
 		event.DateTime.Format(time.RFC3339),
@@ -89,7 +95,6 @@ func (s *Storage) Update(id string, event domain.Event) error {
 		event.NotifyIn.Format(time.RFC3339),
 		id,
 	)
-
 	if err != nil {
 		return err
 	}
@@ -103,7 +108,9 @@ func (s *Storage) Update(id string, event domain.Event) error {
 }
 
 func (s *Storage) Delete(id string) error {
-	result, err := s.db.ExecContext(s.ctx, fmt.Sprintf("DELETE FROM %s WHERE id=$1", tableName), id)
+	result, err := s.db.ExecContext(s.ctx,
+		fmt.Sprintf("DELETE FROM %s WHERE id=$1", tableName),
+		id)
 	if err != nil {
 		return err
 	}
@@ -121,7 +128,10 @@ func (s *Storage) ListOfEventsForDay(date time.Time) ([]domain.Event, error) {
 
 	err := s.db.SelectContext(s.ctx,
 		&events,
-		fmt.Sprintf("SELECT %s FROM %s WHERE DATE(datetime) = $1", tableColumnsRead, tableName),
+		fmt.Sprintf(
+			"SELECT %s FROM %s WHERE DATE(datetime) = $1",
+			tableColumnsRead, tableName,
+		),
 		date.Format("2006-01-02"),
 	)
 	if err != nil {
@@ -139,7 +149,10 @@ func (s *Storage) ListOfEventsForWeek(date time.Time) ([]domain.Event, error) {
 
 	err := s.db.SelectContext(s.ctx,
 		&events,
-		fmt.Sprintf("SELECT %s FROM %s WHERE datetime BETWEEN $1 AND $2", tableColumnsRead, tableName),
+		fmt.Sprintf(
+			"SELECT %s FROM %s WHERE datetime BETWEEN $1 AND $2",
+			tableColumnsRead, tableName,
+		),
 		startOfWeek.Format(time.RFC3339),
 		endOfWeek.Format(time.RFC3339),
 	)
@@ -155,7 +168,10 @@ func (s *Storage) ListOfEventsForMonth(date time.Time) ([]domain.Event, error) {
 
 	err := s.db.SelectContext(s.ctx,
 		&events,
-		fmt.Sprintf("SELECT %s FROM %s WHERE EXTRACT(MONTH FROM datetime)= $1 AND EXTRACT(YEAR FROM datetime)= $2", tableColumnsRead, tableName),
+		fmt.Sprintf(
+			"SELECT %s FROM %s WHERE EXTRACT(MONTH FROM datetime)= $1 AND EXTRACT(YEAR FROM datetime)= $2",
+			tableColumnsRead, tableName,
+		),
 		date.Month(),
 		date.Year(),
 	)
