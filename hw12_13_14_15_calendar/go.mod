@@ -1,6 +1,6 @@
 module github.com/nislovskaya/go_prof_course/hw12_13_14_15_calendar
 
-go 1.22.7
+go 1.23.3
 
 require (
 	github.com/golang-migrate/migrate/v4 v4.18.1
